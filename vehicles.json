@@ -9,6 +9,9 @@
     "/vehicles" : {
       "get" : {
         "description" : "Retrieves all vehicles",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
         "tags" : [ "Vehicle" ],
         "responses" : {
           "200" : {
@@ -36,6 +39,9 @@
     "/vehicles/{vehicle-id}" : {
       "get" : {
         "description" : "Retrieves one single vehicle from the /vehicle-id/ parameter and returns the vehicle encoded in JSON",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
         "tags" : [ "Vehicle" ],
         "parameters" : [ {
           "in" : "path",
@@ -73,6 +79,9 @@
       "put" : {
         "summary" : "Create a vehicle",
         "description" : "Creates a vehicle from the provided data in the requestbody",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
         "tags" : [ "Vehicle" ],
         "requestBody" : {
           "content" : {
@@ -113,6 +122,9 @@
       "put" : {
         "summary" : "Update a vehicle",
         "description" : "Updates one single vehicle from the /vehicle-id/ parameter",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
         "tags" : [ "Vehicle" ],
         "parameters" : [ {
           "in" : "path",
@@ -158,40 +170,13 @@
         }
       }
     },
-    "/vehicles/{vehicle-id}/delete" : {
-      "delete" : {
-        "summary" : "Delete a vehicle",
-        "description" : "Deletes a vehicle",
-        "tags" : [ "Vehicle" ],
-        "parameters" : [ {
-          "in" : "path",
-          "name" : "vehicle-id",
-          "schema" : {
-            "type" : "integer"
-          },
-          "required" : true,
-          "description" : "Numeric ID of the vehicle to delete"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK with content (the deleted object in JSON)"
-          },
-          "204" : {
-            "description" : "OK no content (no response)"
-          },
-          "400" : {
-            "description" : "PUT failed."
-          },
-          "401" : {
-            "description" : "You are not logged in"
-          }
-        }
-      }
-    },
     "/vehicles/claim/" : {
       "put" : {
         "summary" : "Update a vehicle",
         "description" : "Claims (updates) one single vehicle from the /vehicle-id/ parameter",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
         "tags" : [ "Vehicle" ],
         "requestBody" : {
           "content" : {
@@ -211,6 +196,70 @@
           },
           "400" : {
             "description" : "PUT failed (car might already be claimed)."
+          },
+          "401" : {
+            "description" : "You are not logged in"
+          }
+        }
+      }
+    },
+    "/vehicles/me/" : {
+      "put" : {
+        "summary" : "Get claimed vehicles",
+        "description" : "Claims (updates) one single vehicle from the /vehicle-id/ parameter",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
+        "tags" : [ "Vehicle" ],
+        "responses" : {
+          "201" : {
+            "description" : "All claimed vehicle objects",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/vehicle"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "PUT failed (car might already be claimed)."
+          },
+          "401" : {
+            "description" : "You are not logged in"
+          }
+        }
+      }
+    },
+    "/vehicles/{vehicle-id}/delete" : {
+      "delete" : {
+        "summary" : "Delete a vehicle",
+        "description" : "Deletes a vehicle",
+        "security" : [ {
+          "jwt-auth" : [ ]
+        } ],
+        "tags" : [ "Vehicle" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "vehicle-id",
+          "schema" : {
+            "type" : "integer"
+          },
+          "required" : true,
+          "description" : "Numeric ID of the vehicle to delete"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with content (the deleted object in JSON)"
+          },
+          "204" : {
+            "description" : "OK no content (no response)"
+          },
+          "400" : {
+            "description" : "PUT failed."
           },
           "401" : {
             "description" : "You are not logged in"
@@ -299,6 +348,16 @@
           }
         }
       }
+    },
+    "securitySchemes" : {
+      "jwt-auth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
     }
-  }
+  },
+  "security" : [ {
+    "jwt-auth" : [ ]
+  } ]
 }
