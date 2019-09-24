@@ -1,1 +1,847 @@
+openapi: 3.0.0
+info:
+  version: "1.0"
+  title: ELBHO Swagger API
+  description: 'ELBHO API Project for the Cloud Minor'
+  
+paths:
+  '/vehicles':
+    get:
+      description: Retrieves all vehicles
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '404':
+          description: No vehicles found
+        '401':
+          description: You are not logged in
 
+  '/vehicles/{vehicle-id}':
+    get:
+      description: Retrieves one single vehicle from the /vehicle-id/ parameter and returns the vehicle encoded in JSON   
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the vehicle to get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '401':
+          description: You are not logged in
+        '404':
+          description: Vehicle with vehicleId not found
+
+  '/vehicles/create':    
+    put:
+      summary: Create a vehicle
+      description: Creates a vehicle from the provided data in the requestbody
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+  '/vehicles/{vehicle-id}/update':    
+    put:
+      summary: Update a vehicle
+      description: Updates one single vehicle from the /vehicle-id/ parameter
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the vehicle to get
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+  '/vehicles/claim/':
+    put:
+      summary: Update a vehicle
+      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle-claim'
+      responses:
+        '201':
+          description: Claim created
+        '400':
+          description: PUT failed (car might already be claimed).
+        '401':
+          description: You are not logged in
+
+  '/vehicles/me/':
+    put:
+      summary: Get claimed vehicles
+      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      responses:
+        '201':
+          description: All claimed vehicle objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed (car might already be claimed).
+        '401':
+          description: You are not logged in
+
+  '/vehicles/{vehicle-id}/delete':    
+    delete:
+      summary: Delete a vehicle
+      description: Deletes a vehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+              type: integer
+          required: true
+          description: Numeric ID of the vehicle to delete
+      responses:
+        '200':
+          description: OK with content (the deleted object in JSON)
+        '204':
+          description: OK no content (no response)
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+/*JOBS*/
+/job:
+  get:
+    tags:
+    - "job"
+    summary: "Get job by jobId"
+    description: ""
+    operationId: "getJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "Get the job by id"
+      required: true
+      type: "guid"
+    - in: "body"
+      name: "body"
+      description: "Returned job object"
+      required: true
+      schema:
+        $ref: "#/definitions/job"
+    responses:
+      200:
+        description: "successful operation"
+        schema:
+          $ref: "#/definitions/job"
+      404:
+        description: "Job not found"
+  put:
+    tags:
+    - "job"
+    summary: "Updated job with corresponding id"
+    description: "This can only be done by the logged in user to which the job is assigned."
+    operationId: "updateJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "Job that needs to be updated"
+      required: true
+      type: "guid"
+    - in: "body"
+      name: "body"
+      description: "Updated job object"
+      required: true
+      schema:
+        $ref: "#/definitions/job"
+    responses:
+      400:
+        description: "Invalid job id supplied"
+      404:
+        description: "Job not found"
+  delete:
+    tags:
+    - "job"
+    summary: "Delete job"
+    description: "This can only be done by the logged in user to which the job is assigned."
+    operationId: "deleteJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "The job that needs to be deleted"
+      required: true
+      type: "integer"
+    responses:
+      400:
+        description: "Invalid job id supplied"
+      404:
+        description: "Job not found"
+
+/jobs/me:
+  get:
+    tags:
+    - "jobs"
+    summary: "Creates list of all jobs for the current logged in user"
+    description: ""
+    operationId: "getJobsByUserId"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+      - name: "userId"
+        in: "path"
+        description: "Get the jobs by user id"
+        required: true
+        type: "guid"
+      - in: "body"
+        name: "body"
+        description: "Returned job collection"
+        required: true
+        schema:
+          $ref: "#/definitions/job"
+    responses:
+      default:
+        description: "successful operation"
+      200:
+        description: "succesful"
+        schema:
+          $ref: "#/definitions/job"
+      400:
+          description: "Invalid user id supplied"
+ /user:
+    get:
+      tags:
+      - "user"
+      summary: "Get current logged in user"
+      description: ""
+      operationId: "getCurrentUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Updated current logged in user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "User that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        400:
+          description: "Invalid user supplied"
+        404:
+          description: "User not found"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+  /users:
+    get:
+      tags:
+      - "user"
+      summary: "Creates list of all users"
+      description: ""
+      operationId: "getUsers"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        default:
+          description: "successful operation"
+        200:
+          description: "succesful"
+          schema:
+            $ref: "#/definitions/User"
+  /users/findByAvailability:
+    get:
+      tags:
+      - "pet"
+      summary: "Finds Users that are available on given time period"
+      description: "Provide a time period and call will return a list of users that are available on that period"
+      operationId: "findUsersbyAvailability"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "timeperiod"
+        in: "query"
+        description: "Time period to filter by"
+        required: true
+        type: "string"
+        format: "date-time"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        400:
+          description: "Invalid date time value"
+
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the user"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+        400:
+          description: "Invalid username/password supplied"
+  /user/logout:
+    get:
+      tags:
+      - "user"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"
+  /user/{username}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user name"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+  /user/me/availability:
+    get:
+      tags:
+      - "user"
+      summary: "Get availability from current logged in user"
+      description: ""
+      operationId: "getUserAvailability"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+    post:
+      tags:
+      - "user"
+      summary: "Add a new availability to the user"
+      description: ""
+      operationId: "addAvailability"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Availability objects that needs to be added to the user"
+        required: true
+        schema:
+            type: "array"
+            items:
+              type: "object"
+      responses:
+        405:
+          description: "Invalid input"
+  /user/me/status:
+    get:
+      tags:
+      - "user"
+      summary: "Get status from current logged in user"
+      description: ""
+      operationId: "getUserStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Update status of User"
+      description: ""
+      operationId: "updateStatus"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "New status of the user"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        404:
+          description: "User not found"
+        405:
+          description: "Validation exception"
+  /user/me/location:
+    get:
+      tags:
+      - "user"
+      summary: "Get location from current logged in user"
+      description: ""
+      operationId: "getUserLocation"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Update location of User"
+      description: ""
+      operationId: "updateLocation"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "New location of the user"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        404:
+          description: "User not found"
+        405:
+          description: "Validation exception"          
+          
+  /company:
+    get:
+      tags:
+      - "company"
+      summary: "Get all companies currently registered"
+      description: "Get all the data on all the companies"
+      operationId: "getAllCompanies"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Company"
+        404:
+          description: "No Companies found"
+  /company/{CompanyId}:
+    get:
+      tags:
+      - "company"
+      summary: "Get company id"
+      description: "Returns company object"
+      operationId: "getCompanyById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "CompanyId"
+        in: "path"
+        description: "The Id of the company to be fetched"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Company"
+        400:
+          description: "Invalid Id supplied"
+        404:
+          description: "Company not found"
+  /company/{CompanyId}/name:
+    post:
+      tags:
+      - "Company"
+      summary: "Updates company name"
+      description: "Updates company name"
+      operationId: "UpdateCompanyName"
+      consumes:
+      - "application/xml"
+      - "application/json"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "CompanyId"
+        in: "path"
+        description: "ID of company that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        description: "New name of the company"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+        404:
+          description: "Company not found"
+  /company/{CompanyId}/address:
+    post:
+      tags:
+      - "Company"
+      summary: "Updates company address"
+      description: "Updates company address"
+      operationId: "UpdateCompanyaddress"
+      consumes:
+      - "application/xml"
+      - "application/json"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "CompanyId"
+        in: "path"
+        description: "ID of company that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        description: "New address of the company"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+        404:
+          description: "Company not found"
+  /invoice:
+    get:
+      tags:
+      - "invoice"
+      summary: "Get all invoices currently registered"
+      description: "Get all the data on all the invoices"
+      operationId: "getAllInvoices"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Invoice"
+        404:
+          description: "No Companies found"
+  /invoice/{InvoiceId}:
+    get:
+      tags:
+      - "invoice"
+      summary: "Get invoice id"
+      description: "Returns invoice object"
+      operationId: "getInvoiceById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "InvoiceId"
+        in: "path"
+        description: "The Id of the invoice to be fetched"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Invoice"
+        400:
+          description: "Invalid Id supplied"
+        404:
+          description: "Invoice not found"
+    post:
+      tags:
+      - "invoice"
+      summary: "Posts invoice"
+      description: "Posts invoice"
+      operationId: "PostInvoice"
+      consumes:
+      - "application/xml"
+      - "application/json"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "InvoiceId"
+        in: "path"
+        description: "ID of invoice that needs to be posted"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        description: "New invoice"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+        404:
+          description: "Invoice not found"          
+          
+components:
+  schemas:
+    'vehicle':
+      type: object
+      properties:
+        location:
+          type: object
+          items:
+            properties:
+              country:
+                type: string
+              province:
+                type: string
+              city:
+                type: string
+              street:
+                type: string
+              postal-code:
+                type: string
+        claimed-by:
+          description: Contains all present and future claims on the car
+          type: object
+          items:
+            properties:
+              user:
+                type: object
+              timeslot:
+                type: object
+                items:
+                  properties:
+                    start-time: 
+                      type: object
+                    end-time: 
+                      type: object
+
+    'vehicle-claim':
+      type: object
+      properties:
+        vehicle-id:
+          type: integer
+        user-id:
+          type: integer
+        appointment-id:
+          type: integer
+        timeslot:
+          type: object
+          items:
+            properties:
+              start-time: 
+                type: object
+              end-time: 
+                type: object
+  securitySchemes:
+    jwt-auth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - jwt-auth: []
