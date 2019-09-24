@@ -1,0 +1,792 @@
+openapi: 3.0.0
+info:
+  version: "2.0"
+  title: ELBHO Swagger API
+  description: 'ELBHO API Project for the Cloud Minor'
+  
+paths:
+  '/vehicles':
+    get:
+      description: Retrieves all vehicles
+      operationId: getVehicles
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '404':
+          description: No vehicles found
+        '401':
+          description: You are not logged in
+
+  '/vehicles/{vehicle-id}':
+    get:
+      description: Retrieves one single vehicle from the /vehicle-id/ parameter and returns the vehicle encoded in JSON   
+      operationId: getVehicleById
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the vehicle to get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '401':
+          description: You are not logged in
+        '404':
+          description: Vehicle with vehicleId not found
+
+  '/vehicles/create':    
+    put:
+      summary: Create a vehicle
+      description: Creates a vehicle from the provided data in the requestbody
+      operationId: createVehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+  '/vehicles/{vehicle-id}/update':    
+    put:
+      summary: Update a vehicle
+      description: Updates one single vehicle from the /vehicle-id/ parameter
+      operationId: updateVehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the vehicle to get
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+  '/vehicles/claim/':
+    put:
+      summary: Update a vehicle
+      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
+      operationId: claimVehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle-claim'
+      responses:
+        '201':
+          description: Claim created
+        '400':
+          description: PUT failed (car might already be claimed).
+        '401':
+          description: You are not logged in
+
+  '/vehicles/{vehicle-id}/delete':    
+    delete:
+      summary: Delete a vehicle
+      description: Deletes a vehicle
+      operationId: deleteVehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+              type: integer
+          required: true
+          description: Numeric ID of the vehicle to delete
+      responses:
+        '200':
+          description: OK with content (the deleted object in JSON)
+        '204':
+          description: OK no content (no response)
+        '400':
+          description: PUT failed.
+        '401':
+          description: You are not logged in
+
+# JOB
+
+  '/jobs':
+    get:
+      tags:
+      - Job
+      summary: Get all jobs
+      description: Gets all jobs
+      operationId: getJobs
+      security:
+        - jwt-auth: []
+      responses:
+        '201':
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/job'
+        '401':
+          description: You are not logged in
+        '404':
+          description: "Job not found"
+
+  '/jobs/{job-id}/':
+    get:
+      tags:
+      - Job
+      summary: Get job by Id
+      operationId: GetJobById
+      parameters:
+      - in: path
+        name: job-id
+        schema:
+          type: integer
+        required: true
+        description: The ID of the job to get
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/job'
+        '400':
+          description: Invalid job id supplied
+        '404':
+          description: No job with this ID found.
+
+  '/jobs/create':
+    put:
+      tags:
+      - Job
+      summary: Create a job
+      operationId: createJob
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/job'
+      responses:
+        '400':
+          description: Invalid job id supplied
+        '404':
+          description: Job not found
+
+  '/jobs/{job-id}/delete':
+    delete:
+      tags:
+      - Job
+      summary: Delete job
+      description: This can only be done by the logged in user to which the job is assigned.
+      operationId: deleteJob
+      parameters:
+      - in: path
+        name: job-id
+        schema:
+          type: integer
+        required: true
+        description: The ID of the job to delete
+      responses:
+        '400':
+          description: Invalid job id supplied
+        '404':
+          description: Job not found
+  
+# USER
+  '/users':
+    get:
+      tags:
+      - User
+      summary: Creates list of all users
+      operationId: getUsers
+      responses:
+        default:
+          description: successful operation
+        200:
+          description: succesful
+
+  '/users/findByAvailability':
+    get:
+      tags:
+      - "pet"
+      summary: Finds Users that are available on given time period
+      description: Provide a time period and call will return a list of users that are available on that period
+      operationId: findUsersbyAvailability
+      parameters:
+      - name: timeperiod
+        in: query
+        description: Time period to filter by
+        required: true
+        schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: Invalid date time value
+
+  '/users/login':
+    put:
+      tags:
+      - User
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+          content:
+            application/json:
+                schema:
+                  type: object
+                  items: 
+                    $ref: '#/components/schemas/job'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username/password supplied
+
+  '/users/{user-id}':
+    get:
+      tags:
+      - User
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: user-id
+        in: path
+        description: The ID of the user that needs to be fetched. 
+        required: true
+        schema:
+          type: integer
+      responses:
+        201:
+          description: successful operation
+        404:
+          description: User not found
+
+  '/me':
+    get:
+      tags:
+      - Me
+      summary: Get current logged in user
+      operationId: getCurrentUser
+      responses:
+        201:
+          description: successful operation
+        401:
+          description: Currently not logged in
+    put:
+      tags:
+      - Me
+      summary: Updated current logged in user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/user'
+      responses:
+        201:
+          description: successful operation
+    delete:
+      tags:
+      - Me
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      responses:
+        '202':
+          description: User deleted successfully. 
+
+  '/me/jobs':
+    get:
+      tags:
+      - Me
+      summary: Creates list of all jobs for the current logged in user
+      operationId: getJobsByUserId
+      responses:
+        201:
+          description: OK
+        404:
+          description: Invalid user id supplied
+
+  '/me/vehicles/':
+    put:
+      summary: Get claimed vehicles
+      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
+      operationId: myVehicles
+      security:
+        - jwt-auth: []
+      tags:
+        - Me
+      responses:
+        '201':
+          description: All claimed vehicle objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '400':
+          description: PUT failed (car might already be claimed).
+        '401':
+          description: You are not logged in
+
+  '/me/availabilities':
+    get:
+      tags:
+      - Me
+      summary: Get availability from current logged in user
+      operationId: getUserAvailability
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+
+  '/me/availabilities/create':
+    put:
+      tags:
+      - Me
+      summary: Add a new availability to the user
+      operationId: addAvailability
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/availability'
+      responses:
+        '201':
+          description: OK
+        '405':
+          description: Invalid input
+
+  '/me/availabilities/{availability-id}':
+    get:
+      tags:
+      - Me
+      summary: get availability by id
+      operationId: getAvailablityById
+      parameters:
+      - in: path
+        name: availability-id
+        description: ID of the availability to get
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: OK
+        '405':
+          description: Invalid input
+
+  '/me/availabilities/{availability-id}/delete':
+    delete:
+      tags:
+      - Me
+      summary: Add a new availability to the user
+      operationId: deleteAvailability
+      parameters:
+      - in: path
+        name: availability-id
+        description: ID of the availability to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: OK
+        '405':
+          description: Invalid input
+
+  '/me/status':
+    get:
+      tags:
+      - Me
+      summary: Get status from current logged in user
+      operationId: getUserStatus
+      responses:
+        '200':
+          description: successful operation
+        '404':
+          description: User not found
+
+  '/me/status/update':
+    put:
+      tags:
+      - Me
+      summary: Update status of loggedin User
+      operationId: updateStatus
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/status'
+      responses:
+        '404':
+          description: User not found
+        '405':
+          description: Validation exception
+
+  '/me/location':
+    get:
+      tags:
+      - Me
+      summary: Get location from current logged in user
+      operationId: getUserLocation
+      responses:
+        '201':
+          description: successful operation
+        '404':
+          description: User not found
+
+  '/me/location/update':
+    put:
+      tags:
+      - Me
+      summary: Update location of User
+      operationId: updateLocation
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/user'
+      responses:
+        404:
+          description: User not found
+        405:
+          description: Validation exception"         
+
+  '/me/logout':
+    get:
+      tags:
+      - Me
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: Successful operation
+
+# COMPANY
+  '/companies':
+    get:
+      tags:
+      - Company
+      summary: Get all companies currently registered
+      description: Get all the data on all the companies
+      operationId: getAllCompanies
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: No Companies found
+
+  '/companies/{company-id}':
+    get:
+      tags:
+      - Company
+      summary: Get company id
+      description: Returns company object
+      operationId: getCompanyById
+      parameters:
+      - in: path
+        name: company-id
+        description: ID of the company to get
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: Invalid Id supplied
+        404:
+          description: Company not found
+
+  '/companies/{company-id}/update':
+    put:
+      tags:
+      - Company
+      summary: Updates a company
+      operationId: updateCompanyName
+      parameters:
+      - name: company-id
+        in: path
+        description: ID of company that needs to be updated
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/company'
+      responses:
+        200:
+          description: Successful operation
+        404:
+          description: Company not found
+
+  '/invoices':
+    get:
+      tags:
+      - Invoice
+      summary: Get all invoices currently registered
+      description: Get all the data on all the invoices
+      operationId: getAllInvoices
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: No Companies found
+
+  '/invoices/{invoice-id}':
+    get:
+      tags:
+      - Invoice
+      summary: Get by invoice-id
+      description: Returns invoice object
+      operationId: getInvoiceById
+      parameters:
+      - name: invoice-id
+        in: path
+        description: The Id of the invoice to be fetched
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid Id supplied
+        '404':
+          description: Invoice not found
+
+  '/invoices/create':
+    put:
+      tags:
+      - Invoice
+      summary: Posts invoice
+      operationId: createInvoice
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          description: Successful operation
+        '404':
+          description: Invoice not found         
+          
+components:
+  schemas:
+    'vehicle':
+      type: object
+      properties:
+        location:
+          type: object
+          items:
+            properties:
+              country:
+                type: string
+              province:
+                type: string
+              city:
+                type: string
+              street:
+                type: string
+              postal-code:
+                type: string
+        claimed-by:
+          description: Contains all present and future claims on the car
+          type: object
+          items:
+            properties:
+              user:
+                type: object
+              timeslot:
+                type: object
+                items:
+                  properties:
+                    start-time: 
+                      type: object
+                    end-time: 
+                      type: object
+
+    'vehicle-claim':
+      type: object
+      properties:
+        vehicle-id:
+          type: integer
+        user-id:
+          type: integer
+        job-id:
+          type: integer
+        timeslot:
+          type: object
+          items:
+            properties:
+              start-time: 
+                type: object
+              end-time: 
+                type: object
+
+    'job':
+      type: object
+      properties:
+        job-id:
+          type: integer
+        user-id:
+          type: integer
+        timeslot:
+          type: object
+          items:
+            properties:
+              start-time: 
+                type: object
+              end-time: 
+                type: object
+
+    'user':
+      type: object
+      properties:
+        user-id:
+          type: integer
+        Firstname:
+          type: string
+        Lastname:
+          type: string
+        timeslot:
+          type: object
+          items:
+            properties:
+              start-time: 
+                type: object
+              end-time: 
+                type: object
+
+    'company':
+      type: object
+      properties:
+        company-id:
+          type: integer
+        address:
+          type: string
+
+    'availability':
+      type: object
+      properties:
+        user-id:
+          type: integer
+        timeslot:
+          type: object
+          items:
+            properties:
+              start-time: 
+                type: object
+              end-time: 
+                type: object
+
+    'status':
+      type: object
+      properties:
+        status:
+          type: string
+
+  securitySchemes:
+    jwt-auth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - jwt-auth: []
