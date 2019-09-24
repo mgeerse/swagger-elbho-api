@@ -280,7 +280,7 @@ paths:
   '/users/findByAvailability':
     get:
       tags:
-      - "pet"
+      - User
       summary: Finds Users that are available on given time period
       description: Provide a time period and call will return a list of users that are available on that period
       operationId: findUsersbyAvailability
