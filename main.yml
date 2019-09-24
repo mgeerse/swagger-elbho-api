@@ -87,7 +87,7 @@ paths:
           description: You are not logged in
 
   '/vehicles/{vehicle-id}/update':    
-    put:
+    patch:
       summary: Update a vehicle
       description: Updates one single vehicle from the /vehicle-id/ parameter
       operationId: updateVehicle
@@ -125,7 +125,7 @@ paths:
 
   '/vehicles/claim/':
     put:
-      summary: Update a vehicle
+      summary: Claim a vehicle
       description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
       operationId: claimVehicle
       security:
@@ -204,6 +204,8 @@ paths:
       - Job
       summary: Get job by Id
       operationId: GetJobById
+      security:
+        - jwt-auth: []
       parameters:
       - in: path
         name: job-id
@@ -230,6 +232,8 @@ paths:
       tags:
       - Job
       summary: Create a job
+      security:
+        - jwt-auth: []
       operationId: createJob
       requestBody:
         content:
@@ -249,6 +253,8 @@ paths:
       tags:
       - Job
       summary: Delete job
+      security:
+        - jwt-auth: []
       description: This can only be done by the logged in user to which the job is assigned.
       operationId: deleteJob
       parameters:
@@ -270,6 +276,8 @@ paths:
       tags:
       - User
       summary: Creates list of all users
+      security:
+        - jwt-auth: []
       operationId: getUsers
       responses:
         default:
@@ -281,6 +289,8 @@ paths:
     get:
       tags:
       - User
+      security:
+        - jwt-auth: []
       summary: Finds Users that are available on given time period
       description: Provide a time period and call will return a list of users that are available on that period
       operationId: findUsersbyAvailability
@@ -301,6 +311,8 @@ paths:
     put:
       tags:
       - User
+      security:
+        - jwt-auth: []
       summary: Logs user into the system
       operationId: loginUser
       requestBody:
@@ -320,6 +332,8 @@ paths:
     get:
       tags:
       - User
+      security:
+        - jwt-auth: []
       summary: Get user by user name
       operationId: getUserByName
       parameters:
@@ -339,6 +353,8 @@ paths:
     get:
       tags:
       - Me
+      security:
+        - jwt-auth: []
       summary: Get current logged in user
       operationId: getCurrentUser
       responses:
@@ -346,12 +362,14 @@ paths:
           description: successful operation
         401:
           description: Currently not logged in
-    put:
+    patch:
       tags:
       - Me
-      summary: Updated current logged in user
+      security:
+        - jwt-auth: []
+      summary: Patch current logged in user
       description: This can only be done by the logged in user.
-      operationId: updateUser
+      operationId: patchUser
       requestBody:
         content:
           application/json:
@@ -377,6 +395,8 @@ paths:
       tags:
       - Me
       summary: Creates list of all jobs for the current logged in user
+      security:
+        - jwt-auth: []
       operationId: getJobsByUserId
       responses:
         201:
@@ -413,6 +433,8 @@ paths:
       - Me
       summary: Get availability from current logged in user
       operationId: getUserAvailability
+      security:
+        - jwt-auth: []
       responses:
         '200':
           description: successful operation
@@ -427,6 +449,8 @@ paths:
       - Me
       summary: Add a new availability to the user
       operationId: addAvailability
+      security:
+        - jwt-auth: []
       requestBody:
         content:
           application/json:
@@ -446,6 +470,8 @@ paths:
       - Me
       summary: get availability by id
       operationId: getAvailablityById
+      security:
+        - jwt-auth: []
       parameters:
       - in: path
         name: availability-id
@@ -465,6 +491,8 @@ paths:
       - Me
       summary: Add a new availability to the user
       operationId: deleteAvailability
+      security:
+        - jwt-auth: []
       parameters:
       - in: path
         name: availability-id
@@ -484,6 +512,8 @@ paths:
       - Me
       summary: Get status from current logged in user
       operationId: getUserStatus
+      security:
+        - jwt-auth: []
       responses:
         '200':
           description: successful operation
@@ -491,11 +521,13 @@ paths:
           description: User not found
 
   '/me/status/update':
-    put:
+    patch:
       tags:
       - Me
       summary: Update status of loggedin User
-      operationId: updateStatus
+      operationId: patchStatus
+      security:
+        - jwt-auth: []
       requestBody:
         content:
           application/json:
@@ -515,6 +547,8 @@ paths:
       - Me
       summary: Get location from current logged in user
       operationId: getUserLocation
+      security:
+        - jwt-auth: []
       responses:
         '201':
           description: successful operation
@@ -522,11 +556,13 @@ paths:
           description: User not found
 
   '/me/location/update':
-    put:
+    patch:
       tags:
       - Me
       summary: Update location of User
       operationId: updateLocation
+      security:
+        - jwt-auth: []
       requestBody:
         content:
           application/json:
@@ -546,12 +582,12 @@ paths:
       - Me
       summary: Logs out current logged in user session
       operationId: logoutUser
-      parameters: []
+      security:
+        - jwt-auth: []
       responses:
         default:
           description: Successful operation
 
-# COMPANY
   '/companies':
     get:
       tags:
@@ -559,6 +595,30 @@ paths:
       summary: Get all companies currently registered
       description: Get all the data on all the companies
       operationId: getAllCompanies
+      security:
+        - jwt-auth: []
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: No Companies found
+
+  '/companies/create':
+    put:
+      tags:
+      - Company
+      summary: Get all companies currently registered
+      description: Get all the data on all the companies
+      operationId: createCompany
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/company'
+      security:
+        - jwt-auth: []
       responses:
         200:
           description: successful operation
@@ -572,6 +632,8 @@ paths:
       summary: Get company id
       description: Returns company object
       operationId: getCompanyById
+      security:
+        - jwt-auth: []
       parameters:
       - in: path
         name: company-id
@@ -588,11 +650,13 @@ paths:
           description: Company not found
 
   '/companies/{company-id}/update':
-    put:
+    patch:
       tags:
       - Company
       summary: Updates a company
-      operationId: updateCompanyName
+      operationId: updateCompany
+      security:
+        - jwt-auth: []
       parameters:
       - name: company-id
         in: path
@@ -613,6 +677,27 @@ paths:
         404:
           description: Company not found
 
+  '/companies/{company-id}/delete':
+    delete:
+      tags:
+      - Company
+      summary: Deletes a company
+      operationId: deleteCompan
+      security:
+        - jwt-auth: []
+      parameters:
+      - name: company-id
+        in: path
+        description: ID of company that needs to be deleted
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Successful operation
+        404:
+          description: Company not found
+
   '/invoices':
     get:
       tags:
@@ -620,19 +705,30 @@ paths:
       summary: Get all invoices currently registered
       description: Get all the data on all the invoices
       operationId: getAllInvoices
+      security:
+        - jwt-auth: []
       responses:
         200:
           description: successful operation
         404:
           description: No Companies found
 
-  '/invoices/{invoice-id}':
-    get:
+  '/invoices/{invoice-id}/update':
+    patch:
       tags:
       - Invoice
       summary: Get by invoice-id
       description: Returns invoice object
       operationId: getInvoiceById
+      security:
+        - jwt-auth: []
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/company'
       parameters:
       - name: invoice-id
         in: path
@@ -654,6 +750,8 @@ paths:
       - Invoice
       summary: Posts invoice
       operationId: createInvoice
+      security:
+        - jwt-auth: []
       requestBody:
         content:
           application/json:
