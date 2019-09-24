@@ -1,0 +1,310 @@
+ /user:
+    get:
+      tags:
+      - "user"
+      summary: "Get current logged in user"
+      description: ""
+      operationId: "getCurrentUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Updated current logged in user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "User that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        400:
+          description: "Invalid user supplied"
+        404:
+          description: "User not found"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+  /users:
+    get:
+      tags:
+      - "user"
+      summary: "Creates list of all users"
+      description: ""
+      operationId: "getUsers"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        default:
+          description: "successful operation"
+        200:
+          description: "succesful"
+          schema:
+            $ref: "#/definitions/User"
+  /users/findByAvailability:
+    get:
+      tags:
+      - "pet"
+      summary: "Finds Users that are available on given time period"
+      description: "Provide a time period and call will return a list of users that are available on that period"
+      operationId: "findUsersbyAvailability"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "timeperiod"
+        in: "query"
+        description: "Time period to filter by"
+        required: true
+        type: "string"
+        format: "date-time"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        400:
+          description: "Invalid date time value"
+
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the user"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+        400:
+          description: "Invalid username/password supplied"
+  /user/logout:
+    get:
+      tags:
+      - "user"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"
+  /user/{username}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user name"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+  /user/me/availability:
+    get:
+      tags:
+      - "user"
+      summary: "Get availability from current logged in user"
+      description: ""
+      operationId: "getUserAvailability"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+    post:
+      tags:
+      - "user"
+      summary: "Add a new availability to the user"
+      description: ""
+      operationId: "addAvailability"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Availability objects that needs to be added to the user"
+        required: true
+        schema:
+            type: "array"
+            items:
+              type: "object"
+      responses:
+        405:
+          description: "Invalid input"
+  /user/me/status:
+    get:
+      tags:
+      - "user"
+      summary: "Get status from current logged in user"
+      description: ""
+      operationId: "getUserStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Update status of User"
+      description: ""
+      operationId: "updateStatus"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "New status of the user"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        404:
+          description: "User not found"
+        405:
+          description: "Validation exception"
+  /user/me/location:
+    get:
+      tags:
+      - "user"
+      summary: "Get location from current logged in user"
+      description: ""
+      operationId: "getUserLocation"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "string"
+        404:
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Update location of User"
+      description: ""
+      operationId: "updateLocation"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "New location of the user"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        404:
+          description: "User not found"
+        405:
+          description: "Validation exception"

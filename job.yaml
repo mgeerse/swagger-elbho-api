@@ -1,0 +1,107 @@
+/job:
+  get:
+    tags:
+    - "job"
+    summary: "Get job by jobId"
+    description: ""
+    operationId: "getJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "Get the job by id"
+      required: true
+      type: "guid"
+    - in: "body"
+      name: "body"
+      description: "Returned job object"
+      required: true
+      schema:
+        $ref: "#/definitions/job"
+    responses:
+      200:
+        description: "successful operation"
+        schema:
+          $ref: "#/definitions/job"
+      404:
+        description: "Job not found"
+  put:
+    tags:
+    - "job"
+    summary: "Updated job with corresponding id"
+    description: "This can only be done by the logged in user to which the job is assigned."
+    operationId: "updateJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "Job that needs to be updated"
+      required: true
+      type: "guid"
+    - in: "body"
+      name: "body"
+      description: "Updated job object"
+      required: true
+      schema:
+        $ref: "#/definitions/job"
+    responses:
+      400:
+        description: "Invalid job id supplied"
+      404:
+        description: "Job not found"
+  delete:
+    tags:
+    - "job"
+    summary: "Delete job"
+    description: "This can only be done by the logged in user to which the job is assigned."
+    operationId: "deleteJob"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - name: "jobId"
+      in: "path"
+      description: "The job that needs to be deleted"
+      required: true
+      type: "integer"
+    responses:
+      400:
+        description: "Invalid job id supplied"
+      404:
+        description: "Job not found"
+
+/jobs/me:
+  get:
+    tags:
+    - "jobs"
+    summary: "Creates list of all jobs for the current logged in user"
+    description: ""
+    operationId: "getJobsByUserId"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+      - name: "userId"
+        in: "path"
+        description: "Get the jobs by user id"
+        required: true
+        type: "guid"
+      - in: "body"
+        name: "body"
+        description: "Returned job collection"
+        required: true
+        schema:
+          $ref: "#/definitions/job"
+    responses:
+      default:
+        description: "successful operation"
+      200:
+        description: "succesful"
+        schema:
+          $ref: "#/definitions/job"
+      400:
+          description: "Invalid user id supplied"
