@@ -26,37 +26,6 @@ paths:
           description: No vehicles found
         '401':
           description: You are not logged in
-
-  '/vehicles/{vehicle-id}':
-    get:
-      description: Retrieves one single vehicle from the /vehicle-id/ parameter and returns the vehicle encoded in JSON   
-      operationId: getVehicleById
-      security:
-        - jwt-auth: []
-      tags:
-        - Vehicle
-      parameters:
-        - in: path
-          name: vehicle-id
-          schema:
-            type: integer
-          required: true
-          description: The ID of the vehicle to get
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                items: 
-                  $ref: '#/components/schemas/vehicle'
-        '401':
-          description: You are not logged in
-        '404':
-          description: Vehicle with vehicleId not found
-
-  '/vehicles/create':    
     put:
       summary: Create a vehicle
       description: Creates a vehicle from the provided data in the requestbody
@@ -86,7 +55,34 @@ paths:
         '401':
           description: You are not logged in
 
-  '/vehicles/{vehicle-id}/update':    
+  '/vehicles/{vehicle-id}':
+    get:
+      description: Retrieves one single vehicle from the /vehicle-id/ parameter and returns the vehicle encoded in JSON   
+      operationId: getVehicleById
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      parameters:
+        - in: path
+          name: vehicle-id
+          schema:
+            type: integer
+          required: true
+          description: The ID of the vehicle to get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle'
+        '401':
+          description: You are not logged in
+        '404':
+          description: Vehicle with vehicleId not found
     patch:
       summary: Update a vehicle
       description: Updates one single vehicle from the /vehicle-id/ parameter
@@ -122,32 +118,6 @@ paths:
           description: PUT failed.
         '401':
           description: You are not logged in
-
-  '/vehicles/claim/':
-    put:
-      summary: Claim a vehicle
-      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
-      operationId: claimVehicle
-      security:
-        - jwt-auth: []
-      tags:
-        - Vehicle
-      requestBody:
-        content:
-          application/json:
-              schema:
-                type: object
-                items: 
-                  $ref: '#/components/schemas/vehicle-claim'
-      responses:
-        '201':
-          description: Claim created
-        '400':
-          description: PUT failed (car might already be claimed).
-        '401':
-          description: You are not logged in
-
-  '/vehicles/{vehicle-id}/delete':    
     delete:
       summary: Delete a vehicle
       description: Deletes a vehicle
@@ -170,6 +140,30 @@ paths:
           description: OK no content (no response)
         '400':
           description: PUT failed.
+        '401':
+          description: You are not logged in
+
+  '/vehicles/claim/':
+    put:
+      summary: Claim a vehicle
+      description: Claims (updates) one single vehicle from the /vehicle-id/ parameter
+      operationId: claimVehicle
+      security:
+        - jwt-auth: []
+      tags:
+        - Vehicle
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/vehicle-claim'
+      responses:
+        '201':
+          description: Claim created
+        '400':
+          description: PUT failed (car might already be claimed).
         '401':
           description: You are not logged in
 
@@ -197,6 +191,25 @@ paths:
           description: You are not logged in
         '404':
           description: "Job not found"
+    put:
+      tags:
+      - Job
+      summary: Create a job
+      security:
+        - jwt-auth: []
+      operationId: createJob
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/job'
+      responses:
+        '400':
+          description: Invalid job id supplied
+        '404':
+          description: Job not found
 
   '/jobs/{job-id}/':
     get:
@@ -226,29 +239,6 @@ paths:
           description: Invalid job id supplied
         '404':
           description: No job with this ID found.
-
-  '/jobs/create':
-    put:
-      tags:
-      - Job
-      summary: Create a job
-      security:
-        - jwt-auth: []
-      operationId: createJob
-      requestBody:
-        content:
-          application/json:
-              schema:
-                type: object
-                items: 
-                  $ref: '#/components/schemas/job'
-      responses:
-        '400':
-          description: Invalid job id supplied
-        '404':
-          description: Job not found
-
-  '/jobs/{job-id}/delete':
     delete:
       tags:
       - Job
@@ -442,8 +432,6 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-
-  '/me/availabilities/create':
     put:
       tags:
       - Me
@@ -484,12 +472,10 @@ paths:
           description: OK
         '405':
           description: Invalid input
-
-  '/me/availabilities/{availability-id}/delete':
     delete:
       tags:
       - Me
-      summary: Add a new availability to the user
+      summary: Delete current logged in user
       operationId: deleteAvailability
       security:
         - jwt-auth: []
@@ -519,8 +505,6 @@ paths:
           description: successful operation
         '404':
           description: User not found
-
-  '/me/status/update':
     patch:
       tags:
       - Me
@@ -554,8 +538,6 @@ paths:
           description: successful operation
         '404':
           description: User not found
-
-  '/me/location/update':
     patch:
       tags:
       - Me
@@ -602,8 +584,6 @@ paths:
           description: successful operation
         404:
           description: No Companies found
-
-  '/companies/create':
     put:
       tags:
       - Company
@@ -648,8 +628,6 @@ paths:
           description: Invalid Id supplied
         404:
           description: Company not found
-
-  '/companies/{company-id}/update':
     patch:
       tags:
       - Company
@@ -676,8 +654,6 @@ paths:
           description: Successful operation
         404:
           description: Company not found
-
-  '/companies/{company-id}/delete':
     delete:
       tags:
       - Company
@@ -712,14 +688,53 @@ paths:
           description: successful operation
         404:
           description: No Companies found
+    put:
+      tags:
+      - Invoice
+      summary: Posts invoice
+      operationId: createInvoice
+      security:
+        - jwt-auth: []
+      requestBody:
+        content:
+          application/json:
+              schema:
+                type: object
+                items: 
+                  $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          description: Successful operation
+        '404':
+          description: Invoice not found     
 
-  '/invoices/{invoice-id}/update':
+  '/invoices/{invoice-id}':
+    get:
+      tags:
+      - Invoice
+      summary: Get an invoices currently registered
+      description: Get all the data on all the invoices
+      operationId: getInvoiceById
+      parameters:
+      - name: invoice-id
+        in: path
+        description: ID of company that needs to be updated
+        required: true
+        schema:
+          type: integer
+      security:
+        - jwt-auth: []
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: No Companies found
     patch:
       tags:
       - Invoice
       summary: Get by invoice-id
       description: Returns invoice object
-      operationId: getInvoiceById
+      operationId: patchInvoiceById
       security:
         - jwt-auth: []
       requestBody:
@@ -743,28 +758,25 @@ paths:
           description: Invalid Id supplied
         '404':
           description: Invoice not found
-
-  '/invoices/create':
-    put:
+    delete:
       tags:
-      - Invoice
-      summary: Posts invoice
-      operationId: createInvoice
+      - Company
+      summary: Deletes a invoice
+      operationId: deleteInvoiceById
       security:
         - jwt-auth: []
-      requestBody:
-        content:
-          application/json:
-              schema:
-                type: object
-                items: 
-                  $ref: '#/components/schemas/user'
+      parameters:
+      - name: invoice-id
+        in: path
+        description: ID of company that needs to be deleted
+        required: true
+        schema:
+          type: integer
       responses:
-        '201':
+        200:
           description: Successful operation
-        '404':
-          description: Invoice not found         
-          
+        404:
+          description: Company not found
 components:
   schemas:
     'vehicle':
